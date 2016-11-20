@@ -29,6 +29,8 @@ import java.util.concurrent.Executors;
  * @related charts/scatter/ScatterChart
  */
 public class Chart extends Application {
+    Communicator communicator = null;
+    KeybindingController keybindingController = null;
     private static final int MAX_DATA_POINTS = 50;
 
     private XYChart.Series series;
@@ -39,11 +41,31 @@ public class Chart extends Application {
     private Timeline timeline2;
     private NumberAxis xAxis;
 
+
+    public Chart() {
+        //this.initComponents();
+        this.createObjects();
+        //this.communicator.searchForPorts();
+        //this.keybindingController.toggleControls();
+        //this.keybindingController.bindKeys();
+    }
+
+    private void createObjects() {
+        this.communicator = new Communicator();
+//        this.keybindingController = new KeybindingController();
+    }
+
     private void init(Stage primaryStage) {
         HBox topMenu = new HBox();
         Button button1 = new Button("File");
         Button button2 = new Button("Edit");
         Button button3 = new Button("View");
+        button1.setOnAction(event ->{
+        this.communicator.connect();
+            if(this.communicator.getConnected() && this.communicator.initIOStream()) {
+            this.communicator.initListener();
+            }
+        });
         topMenu.getChildren().addAll(button1, button2, button3);
 
         VBox leftMenu = new VBox();
@@ -109,7 +131,7 @@ public class Chart extends Application {
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
-                Thread.sleep(50);
+                Thread.sleep(2500);
                 executor.execute(this);
             } catch (InterruptedException ex) {
                 //Logger.getLogger(AreaChartSample.class.getName()).log(Level.SEVERE, null, ex);
